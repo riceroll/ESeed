@@ -1,0 +1,25 @@
+LAMMPS (7 Aug 2019)
+###############################################################################
+#
+#
+#  This input script is a modified version of the example script lj_ehex.lmp
+#  which is part of the supplementary (open access) material of the paper
+#
+#  P. Wirnsberger, D. Frenkel and C. Dellago,
+#  "An enhanced version of the heat exchange algorithm with excellent energy
+#  conservation properties", J. Chem. Phys. 143, 124104 (2015).
+#
+#  The full article is available on arXiv: http://arxiv.org/pdf/1507.07081.
+#
+#
+#  Description:
+#  ------------
+#
+#  This file is a LAMMPS input script for carrying out a NEMD simulation of
+#  Lennard-Jones using the eHEX/a algorithm. The run produces two files:
+#  "out.Tlj_ehex" contains the temperature profile and "out.Elj_ehex" the time
+#  evolution of the total energy.
+#
+###############################################################################
+
+log 		    log.lj_ehex
