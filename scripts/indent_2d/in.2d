@@ -3,7 +3,7 @@
 dimension   2
 boundary    p s p
 
-atom_style  atomic
+atom_style  sphere
 
 neighbor    0.3 bin
 neigh_modify    delay 5
@@ -29,8 +29,8 @@ mass        3   10.0
 # Settings
 
 # pair
-pair_style  lj/cut  2.5
-pair_coeff  * * 1.5 1.0
+pair_style      gran/hooke/history 2000.0 NULL 50.0 NULL 0.5 0
+pair_coeff  * *
 
 
 # define groups

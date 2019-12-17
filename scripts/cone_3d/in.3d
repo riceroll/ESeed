@@ -1,0 +1,81 @@
+# Initialization
+
+dimension   3
+boundary    p p s
+newton      on
+comm_modify vel yes
+atom_style  sphere
+
+neighbor    0.3 bin
+neigh_modify    delay 5
+
+
+# ==========================================================
+# Atom definition
+
+lattice     sc 0.6     # order of these two lines cannot be reversed
+
+region          reg0    block 0 30 0 30 0 30  # yhi can be at most 11? last two be too large will slow, cannot smaller than bin radius, but why 0.25?
+create_box      3       reg0    # creates a simulation box based on the specified region
+
+create_atoms    1       box     # create atoms on lattice or single atom, instead of explicitly via read_data or read_restart, within a specific simulation box and lattice
+                                # if box, atoms are filled in the entire simulation box
+                                # seems the type number does not matter
+
+#mass        1   100.0
+#mass        2   10.0 
+#mass        3   10.0
+
+# ==========================================================
+# Settings
+
+pair_style      gran/hooke/history 2000.0 NULL 50.0 NULL 0.5 0
+pair_coeff  * *
+
+
+# define groups
+region      reg_mobile        cone      z  15 15 1 5 20 30    
+region      reg_soil          block       2     28     2    28     2    INF
+
+group       group_mobile      region      reg_mobile
+group       group_soil_all        region      reg_soil   
+group       group_soil        subtract    group_soil_all    group_mobile
+group       group_wall        subtract    all     group_soil_all
+
+set         group             group_mobile      type    1
+set         group             group_soil        type    2
+set         group             group_wall        type    3
+
+fix         fix_nve           all           nve         # nve integration, (volume, energy)
+# fix         fix_temp_resc     all           temp/rescale    100    0.1     0.1     0.01    1.0 
+
+fix         fix_wall          group_wall    setforce        0.0    0.0     0.0
+fix         fix_gravity       group_mobile  gravity         10.0   vector      0       0      -1
+fix         fix_gravity_2     group_soil  gravity         10.0   vector      0       0      -1
+
+fix         fix_rigid         group_mobile           rigid       group       1       group_mobile
+
+fix         fix_visc          group_soil    viscous     0.95
+
+
+
+
+# fix         fix_move          group_mobile      move linear      0 0 -2
+
+# fix         fix_rotate        group_mobile      move rotate      15 15 0  0 0 1 0.1
+
+# ==========================================================
+# Run and Dump
+
+compute     1 all erotate/sphere
+thermo_style    custom step atoms ke c_1 vol
+thermo      1000
+
+timestep    0.001
+
+# dump        3 all movie 100 movie.mpg type type up 0 0 1
+dump        3 all netcdf 100 movie.nc id type x y z diameter
+
+run     100
+# unfix fix_rotate
+run 5000

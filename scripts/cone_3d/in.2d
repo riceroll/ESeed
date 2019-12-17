@@ -1,0 +1,65 @@
+# Initialization
+
+dimension   2
+boundary    p s p
+
+atom_style  sphere
+
+neighbor    0.3 bin
+neigh_modify    delay 5
+
+
+# ==========================================================
+# Atom definition
+
+lattice     hex 1.4     # order of these two lines cannot be reversed
+
+region          reg0    block 0 30 0 10 -0.25 0.25  # yhi can be at most 11? last two be too large will slow, cannot smaller than bin radius, but why 0.25?
+create_box      3       reg0    # creates a simulation box based on the specified region
+
+create_atoms    1       box     # create atoms on lattice or single atom, instead of explicitly via read_data or read_restart, within a specific simulation box and lattice
+                                # if box, atoms are filled in the entire simulation box
+                                # seems the type number does not matter
+
+mass        1   100.0
+mass        2   10.0 
+mass        3   10.0
+
+# ==========================================================
+# Settings
+
+# pair
+pair_style      gran/hooke/history 2000.0 NULL 50.0 NULL 0.5 0
+pair_coeff  * *
+
+
+# define groups
+region      reg_mobile        cone      y  10 0 1 15 6 20    
+region      reg_soil          block       2     28     1    INF     INF     INF
+
+group       group_mobile      region      reg_mobile
+group       group_soil_filled        region      reg_soil
+group       group_wall        subtract all group_soil_filled
+group       group_soil        subtract group_soil_filled group_mobile
+
+set         group             group_mobile      type    1
+set         group             group_soil        type    2
+set         group             group_wall        type    3
+
+fix         fix_nve           all           nve         # nve integration, (volume, energy)
+fix         fix_temp_resc     all           temp/rescale    100    0.1     0.1     0.01    1.0 
+
+fix         fix_wall          group_wall    setforce        0.0    0.0     0.0
+#fix         fix_gravity       group_mobile  gravity         10.0   vector      0       -1      0
+fix         fix_gravity_2     group_soil_filled  gravity         10.0   vector      0       -1      0
+
+fix         fix_rigid         all           rigid       group       1       group_mobile
+fix         fix_2d            all           enforce2d           # ensure atoms do not move from intial z-plane
+
+# ==========================================================
+# Run and Dump
+
+timestep    0.003
+dump        3 all movie 100 movie.mpg type type &
+
+run     10000

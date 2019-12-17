@@ -22,5 +22,8 @@ option(PKG_SPIN "spin package" on)
 option(PKG_SNAP "snap package" on)
 option(PKG_SRD "srd package" on)
 
+option(PKG_USER-NETCDF "netcdf package" on)
+option(PKG_USER-MISC "misc package" on)
+
 # optional packages
 option(PKG_PYTHON "python wrapper" on)
