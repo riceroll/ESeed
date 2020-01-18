@@ -1,3 +1,24 @@
+# LAMMPS_JIANZHE
+
+This is the LAMMPS compiled by Jianzhe for ESeed project.
+
+---
+
+### Compilation
+
+```bash
+mkdir build
+cd build
+cmake ../cmake
+make -j4	# replace 4 with the number of threads
+```
+
+
+
+---
+
+### LAMMPS README
+
 This is the LAMMPS software package.
 
 LAMMPS stands for Large-scale Atomic/Molecular Massively Parallel
