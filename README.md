@@ -1,3 +1,3 @@
 # ESeed_Simulator
-# ESeed_Simulator
-# ESeed
+
+A simulator for the drilling behavior of Erodium Seed with LAMMPS.
